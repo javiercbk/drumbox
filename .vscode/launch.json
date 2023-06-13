@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+          "name": "Drumbox",
+          "request": "launch",
+          "type": "dart",
+          "flutterMode": "debug"
+        }
+    ]
+}
