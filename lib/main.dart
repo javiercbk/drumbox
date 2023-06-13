@@ -62,27 +62,6 @@ AudioPlayer playerByBeatType(BeatType beatType) {
   }
 }
 
-// AudioPlayer playerByBeatType(BeatType beatType) {
-//   switch (beatType) {
-//     case BeatType.snare:
-//       return player;
-//     case BeatType.hi_tom:
-//       return player;
-//     case BeatType.mid_tom:
-//       return player;
-//     case BeatType.floor_tom:
-//       return player;
-//     case BeatType.kick:
-//       return player;
-//     case BeatType.hi_hat:
-//       return hiHatPlayer;
-//     case BeatType.crash:
-//       return crashPlayer;
-//     case BeatType.ride:
-//       return ridePlayer;
-//   }
-// }
-
 AssetSource assetByBeatType(BeatType beatType) {
   switch (beatType) {
     case BeatType.snare:
@@ -114,36 +93,6 @@ void setBeatInLoop(BeatType beatType, int index) {
 int bpm = 120;
 int _loopIndex = 0;
 
-// Iterable<int> _loopStream() sync* {
-//   while (true) {
-//     yield loop[_loopIndex];
-//     if (_loopIndex == 15) {
-//       _loopIndex = 0;
-//     } else {
-//       _loopIndex++;
-//     }
-//   }
-// }
-
-// Future<void> playLoop() async {
-//   for (final beats in _loopStream()) {
-
-//   }
-// }
-
-// Future<void> initPlayer() async {
-// await Future.forEach(BeatType.values,
-//     (beatType) => player.setSource(assetByBeatType(beatType)));
-// await player.setPlayerMode(PlayerMode.lowLatency);
-// await player.setReleaseMode(ReleaseMode.stop);
-// await crashPlayer.setPlayerMode(PlayerMode.lowLatency);
-// await crashPlayer.setReleaseMode(ReleaseMode.stop);
-// await ridePlayer.setPlayerMode(PlayerMode.lowLatency);
-// await ridePlayer.setReleaseMode(ReleaseMode.stop);
-// await hiHatPlayer.setPlayerMode(PlayerMode.lowLatency);
-// await hiHatPlayer.setReleaseMode(ReleaseMode.stop);
-// }
-
 Future<void> initPlayer() async {
   await snarePlayer.setSource(AssetSource('kit/real-01BB1-snare-R2M.wav'));
   await snarePlayer.setPlayerMode(PlayerMode.lowLatency);
@@ -163,30 +112,29 @@ Future<void> initPlayer() async {
   await ridePlayer.setPlayerMode(PlayerMode.lowLatency);
 }
 
-// void playAudio((SendPort, RootIsolateToken) initParams) async {
-//   BackgroundIsolateBinaryMessenger.ensureInitialized(initParams.$2);
-//   ReceivePort audioReceivePort = ReceivePort();
-//   initParams.$1.send(audioReceivePort.sendPort);
-//   await for (var message in audioReceivePort) {
-//     if (message is BeatType) {
-//       var as = assetSourceByType[message];
-//       if (as != null) {
-//         await player.play(as);
-//       }
-//     } else if (message is ControlCommand) {
-//       switch (message) {
-//         case ControlCommand.play:
-//           // start playng loop
-//           break;
-//         case ControlCommand.stop:
-//           // stop playing loop
-//           break;
-//       }
-//     } else if (message is (BeatType, int)) {
-//       setBeatInLoop(message.$1, message.$2);
-//     }
-//   }
-// }
+void playAudio((SendPort, RootIsolateToken) initParams) async {
+  BackgroundIsolateBinaryMessenger.ensureInitialized(initParams.$2);
+  ReceivePort audioReceivePort = ReceivePort();
+  initParams.$1.send(audioReceivePort.sendPort);
+  await for (var message in audioReceivePort) {
+    if (message is BeatType) {
+      var player = playerByBeatType(message);
+      var as = assetByBeatType(message);
+      await player.play(as);
+    } else if (message is ControlCommand) {
+      switch (message) {
+        case ControlCommand.play:
+          // start playng loop
+          break;
+        case ControlCommand.stop:
+          // stop playing loop
+          break;
+      }
+    } else if (message is (BeatType, int)) {
+      setBeatInLoop(message.$1, message.$2);
+    }
+  }
+}
 
 late SendPort audioSendPort;
 
@@ -194,6 +142,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
   await initPlayer();
+  ReceivePort audioReceivePort = ReceivePort();
+  Isolate.spawn(playAudio, (audioReceivePort.sendPort, rootIsolateToken));
+  audioSendPort = await audioReceivePort.first;
   BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
   runApp(const Drumbox());
 }
@@ -417,15 +368,8 @@ class _BeatState extends State<Beat> {
       icon: Icon(activeIcon),
       color: Colors.white,
       iconSize: 24.0,
-      onPressed: () async {
-        var player = playerByBeatType(_beatType);
-        // var assetSource = assetByBeatType(_beatType);
-        // await player.stop();
-        // await player.play(assetSource);
-        // var assetSource = assetByBeatType(_beatType);
-        await player.stop();
-        await player.resume();
-        // await player.play(assetSource);
+      onPressed: () {
+        audioSendPort.send(_beatType);
         setState(() {
           _active = !_active;
         });
