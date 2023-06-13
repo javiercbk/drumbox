@@ -28,52 +28,31 @@ String beatTypeName(BeatType beatType) {
   }
 }
 
-final player = AudioPlayer();
-final hiHatPlayer = AudioPlayer();
-final crashPlayer = AudioPlayer();
-final ridePlayer = AudioPlayer();
-// final snarePlayer = AudioPlayer();
-// final hiTomPlayer = AudioPlayer();
-// final midTomPlayer = AudioPlayer();
-// final floorTomPlayer = AudioPlayer();
-// final kickPlayer = AudioPlayer();
+// final player = AudioPlayer();
 // final hiHatPlayer = AudioPlayer();
 // final crashPlayer = AudioPlayer();
 // final ridePlayer = AudioPlayer();
-
-// AudioPlayer playerByBeatType(BeatType beatType) {
-//   switch (beatType) {
-//     case BeatType.snare:
-//       return snarePlayer;
-//     case BeatType.hi_tom:
-//       return hiTomPlayer;
-//     case BeatType.mid_tom:
-//       return midTomPlayer;
-//     case BeatType.floor_tom:
-//       return floorTomPlayer;
-//     case BeatType.kick:
-//       return kickPlayer;
-//     case BeatType.hi_hat:
-//       return hiHatPlayer;
-//     case BeatType.crash:
-//       return crashPlayer;
-//     case BeatType.ride:
-//       return ridePlayer;
-//   }
-// }
+final snarePlayer = AudioPlayer();
+final hiTomPlayer = AudioPlayer();
+final midTomPlayer = AudioPlayer();
+final floorTomPlayer = AudioPlayer();
+final kickPlayer = AudioPlayer();
+final hiHatPlayer = AudioPlayer();
+final crashPlayer = AudioPlayer();
+final ridePlayer = AudioPlayer();
 
 AudioPlayer playerByBeatType(BeatType beatType) {
   switch (beatType) {
     case BeatType.snare:
-      return player;
+      return snarePlayer;
     case BeatType.hi_tom:
-      return player;
+      return hiTomPlayer;
     case BeatType.mid_tom:
-      return player;
+      return midTomPlayer;
     case BeatType.floor_tom:
-      return player;
+      return floorTomPlayer;
     case BeatType.kick:
-      return player;
+      return kickPlayer;
     case BeatType.hi_hat:
       return hiHatPlayer;
     case BeatType.crash:
@@ -82,6 +61,27 @@ AudioPlayer playerByBeatType(BeatType beatType) {
       return ridePlayer;
   }
 }
+
+// AudioPlayer playerByBeatType(BeatType beatType) {
+//   switch (beatType) {
+//     case BeatType.snare:
+//       return player;
+//     case BeatType.hi_tom:
+//       return player;
+//     case BeatType.mid_tom:
+//       return player;
+//     case BeatType.floor_tom:
+//       return player;
+//     case BeatType.kick:
+//       return player;
+//     case BeatType.hi_hat:
+//       return hiHatPlayer;
+//     case BeatType.crash:
+//       return crashPlayer;
+//     case BeatType.ride:
+//       return ridePlayer;
+//   }
+// }
 
 AssetSource assetByBeatType(BeatType beatType) {
   switch (beatType) {
@@ -111,41 +111,57 @@ void setBeatInLoop(BeatType beatType, int index) {
   loop[index] = loop[index] ^ bitmask;
 }
 
-Future<void> initPlayer() async {
-  // await Future.forEach(BeatType.values,
-  //     (beatType) => player.setSource(assetByBeatType(beatType)));
-  await player.setPlayerMode(PlayerMode.lowLatency);
-  await player.setReleaseMode(ReleaseMode.stop);
-  await crashPlayer.setPlayerMode(PlayerMode.lowLatency);
-  await crashPlayer.setReleaseMode(ReleaseMode.stop);
-  await ridePlayer.setPlayerMode(PlayerMode.lowLatency);
-  await ridePlayer.setReleaseMode(ReleaseMode.stop);
-  await hiHatPlayer.setPlayerMode(PlayerMode.lowLatency);
-  await hiHatPlayer.setReleaseMode(ReleaseMode.stop);
-}
+int bpm = 120;
+int _loopIndex = 0;
+
+// Iterable<int> _loopStream() sync* {
+//   while (true) {
+//     yield loop[_loopIndex];
+//     if (_loopIndex == 15) {
+//       _loopIndex = 0;
+//     } else {
+//       _loopIndex++;
+//     }
+//   }
+// }
+
+// Future<void> playLoop() async {
+//   for (final beats in _loopStream()) {
+
+//   }
+// }
 
 // Future<void> initPlayer() async {
-//   AudioPlayer.global.onLog.listen(
-//     (String message) => print(message),
-//     onError: (Object e, [StackTrace? stackTrace]) => print(e),
-//   );
-//   await snarePlayer.setSource(AssetSource('kit/real-01BB1-snare-R2M.wav'));
-//   await snarePlayer.setPlayerMode(PlayerMode.lowLatency);
-//   await hiTomPlayer.setSource(AssetSource('kit/real-03.TOM2C-L.wav'));
-//   await hiTomPlayer.setPlayerMode(PlayerMode.lowLatency);
-//   await midTomPlayer.setSource(AssetSource('kit/real-03.TOM3C-L.wav'));
-//   await midTomPlayer.setPlayerMode(PlayerMode.lowLatency);
-//   await floorTomPlayer.setSource(AssetSource('kit/real-08.TOM4M.wav'));
-//   await floorTomPlayer.setPlayerMode(PlayerMode.lowLatency);
-//   await kickPlayer.setSource(AssetSource('kit/real-kick-F039.wav'));
-//   await kickPlayer.setPlayerMode(PlayerMode.lowLatency);
-//   await hiHatPlayer.setSource(AssetSource('kit/real-01L2.UF-HiHat-M.wav'));
-//   await hiHatPlayer.setPlayerMode(PlayerMode.lowLatency);
-//   await crashPlayer.setSource(AssetSource('kit/real-01CH12ACSM.wav'));
-//   await crashPlayer.setPlayerMode(PlayerMode.lowLatency);
-//   await ridePlayer.setSource(AssetSource('kit/real-02BL20RKRM.wav'));
-//   await ridePlayer.setPlayerMode(PlayerMode.lowLatency);
+// await Future.forEach(BeatType.values,
+//     (beatType) => player.setSource(assetByBeatType(beatType)));
+// await player.setPlayerMode(PlayerMode.lowLatency);
+// await player.setReleaseMode(ReleaseMode.stop);
+// await crashPlayer.setPlayerMode(PlayerMode.lowLatency);
+// await crashPlayer.setReleaseMode(ReleaseMode.stop);
+// await ridePlayer.setPlayerMode(PlayerMode.lowLatency);
+// await ridePlayer.setReleaseMode(ReleaseMode.stop);
+// await hiHatPlayer.setPlayerMode(PlayerMode.lowLatency);
+// await hiHatPlayer.setReleaseMode(ReleaseMode.stop);
 // }
+
+Future<void> initPlayer() async {
+  await snarePlayer.setSource(AssetSource('kit/real-01BB1-snare-R2M.wav'));
+  await snarePlayer.setPlayerMode(PlayerMode.lowLatency);
+  await hiTomPlayer.setSource(AssetSource('kit/real-03.TOM2C-L.wav'));
+  await hiTomPlayer.setPlayerMode(PlayerMode.lowLatency);
+  await midTomPlayer.setSource(AssetSource('kit/real-03.TOM3C-L.wav'));
+  await midTomPlayer.setPlayerMode(PlayerMode.lowLatency);
+  await floorTomPlayer.setSource(AssetSource('kit/real-08.TOM4M.wav'));
+  await floorTomPlayer.setPlayerMode(PlayerMode.lowLatency);
+  await kickPlayer.setSource(AssetSource('kit/real-kick-F039.wav'));
+  await kickPlayer.setPlayerMode(PlayerMode.lowLatency);
+  await hiHatPlayer.setSource(AssetSource('kit/real-01L2.UF-HiHat-M.wav'));
+  await hiHatPlayer.setPlayerMode(PlayerMode.lowLatency);
+  await crashPlayer.setSource(AssetSource('kit/real-01CH12ACSM.wav'));
+  await crashPlayer.setPlayerMode(PlayerMode.lowLatency);
+  await ridePlayer.setSource(AssetSource('kit/real-02BL20RKRM.wav'));
+  await ridePlayer.setPlayerMode(PlayerMode.lowLatency);
+}
 
 // void playAudio((SendPort, RootIsolateToken) initParams) async {
 //   BackgroundIsolateBinaryMessenger.ensureInitialized(initParams.$2);
@@ -251,7 +267,7 @@ class MainContainer extends StatelessWidget {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Tempo(bpm: 120, click: true),
+            Tempo(bpm: bpm, click: true),
             KitPart(beatType: BeatType.snare, amount: 16),
             KitPart(beatType: BeatType.hi_tom, amount: 16),
             KitPart(beatType: BeatType.mid_tom, amount: 16),
@@ -403,11 +419,12 @@ class _BeatState extends State<Beat> {
       iconSize: 24.0,
       onPressed: () async {
         var player = playerByBeatType(_beatType);
-        var asset = assetByBeatType(_beatType);
-        await player.stop();
-        await player.play(asset);
         // var assetSource = assetByBeatType(_beatType);
         // await player.stop();
+        // await player.play(assetSource);
+        // var assetSource = assetByBeatType(_beatType);
+        await player.stop();
+        await player.resume();
         // await player.play(assetSource);
         setState(() {
           _active = !_active;
